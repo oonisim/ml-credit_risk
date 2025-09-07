@@ -11,14 +11,14 @@ def analyse_target_distribution(df: pd.DataFrame):
         df: data
     """
     good = go.Bar(
-        x=df[df["Risk"] == 'good']["Risk"].value_counts().index.values,
-        y=df[df["Risk"] == 'good']["Risk"].value_counts().values,
+        x=df[df["Risk"] == False]["Risk"].value_counts().index.values,
+        y=df[df["Risk"] == False]["Risk"].value_counts().values,
         name='Good credit'
     )
 
     bad = go.Bar(
-        x=df[df["Risk"] == 'bad']["Risk"].value_counts().index.values,
-        y=df[df["Risk"] == 'bad']["Risk"].value_counts().values,
+        x=df[df["Risk"] == True]["Risk"].value_counts().index.values,
+        y=df[df["Risk"] == True]["Risk"].value_counts().values,
         name='Bad credit'
     )
 
@@ -41,14 +41,14 @@ def analyse_per_generation(df: pd.DataFrame):
     # Age bins
     interval = (18, 25, 35, 60, 100)
     cats = ['Student', 'Young', 'Adult', 'Senior']
-    df["Age_cat"] = pd.cut(df.Age, interval, labels=cats)
+    df["generation"] = pd.cut(df.Age, interval, labels=cats)
 
     df_good = df[df["Risk"] == 'good']
     df_bad = df[df["Risk"] == 'bad']
 
     good = go.Box(
         y=df_good["Credit amount"],
-        x=df_good["Age_cat"],
+        x=df_good["generation"],
         name='Good credit',
         marker=dict(
             color='#3D9970'
@@ -57,7 +57,7 @@ def analyse_per_generation(df: pd.DataFrame):
 
     bad = go.Box(
         y=df_bad['Credit amount'],
-        x=df_bad['Age_cat'],
+        x=df_bad['generation'],
         name='Bad credit',
         marker=dict(
             color='#FF4136'
