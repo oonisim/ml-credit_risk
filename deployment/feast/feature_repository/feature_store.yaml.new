@@ -1,0 +1,43 @@
+project: feature_store_tutorial
+# registry: data/registry.db
+# SQLite SQL Registry does not work with FEAST 0.53
+# https://github.com/feast-dev/feast/issues/5565
+# registry:
+#   registry_type: sql
+#   path: sqlite:///data/registry.db
+#   sqlalchemy_config_kwargs:
+#     echo: True                   # To show verbose SQLAlchemy operations.
+#   #  connect_args:
+#   #    timeout: 30
+#   #    check_same_thread: False
+registry:
+    registry_type: sql
+    # path: postgresql://postgres:P@ssword@localhost:5432/feast_registry
+    path: postgresql://postgres@localhost:5432/feast_registry
+    cache_ttl_seconds: 60
+    sqlalchemy_config_kwargs:
+        echo: True               # To show verbose SQLAlchemy operations.
+        pool_pre_ping: true
+    #  connect_args:
+    #    timeout: 30
+    #    check_same_thread: False
+
+# The provider primarily specifies default offline / online stores & storing the registry in a given cloud
+provider: local
+offline_store:
+  type: postgres
+  host: localhost
+  port: 5432
+  database: offline_store
+  db_schema: credit_risk
+  user: dbadm
+  password: P@ssword
+online_store:
+  type: sqlite
+  path: data/online_store.db
+entity_key_serialization_version: 3
+# By default, no_auth for authentication and authorization,
+# other possible values kubernetes and oidc.
+# Refer the documentation for more details.
+auth:
+  type: no_auth
