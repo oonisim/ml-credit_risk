@@ -8,8 +8,9 @@ echo "--------------------------------------------------------------------------
 echo "Creating PostgreSQL offline store database ${PG_OFFLINE_DB} if not exists..."
 echo "--------------------------------------------------------------------------------"
 
-read -r -s -p "Enter FEAST offline store database password: " PG_OFFLINE_PASSWORD
-echo  # Add newline after password input
+# read -r -s -p "Enter FEAST offline store database password: " PG_OFFLINE_PASSWORD
+# echo  # Add newline after password input
+PG_OFFLINE_PASSWORD=
 
 psql -h "${PG_OFFLINE_HOST}" -p "${PG_OFFLINE_PORT}" -U "${PG_ADMIN_USER}" -lqt \
   | cut -d \| -f 1 \
