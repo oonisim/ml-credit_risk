@@ -7,7 +7,6 @@ from feast import (
     FeatureService,
     FeatureView,
     Field,
-    FileSource,
     Project,
 )
 from feast.infra.offline_stores.contrib.postgres_offline_store.postgres_source import (
@@ -87,8 +86,12 @@ credit_risk_feature_view = FeatureView(
 )
 
 # This groups features into a model version
-driver_activity_v1 = FeatureService(
-    name="customer_credit_risk",
+customer_credit_risk_features = FeatureService(
+    name="customer_credit_risk_feature_service",
+    description="Features for Customer Credit Dirk Model",
+    tags={
+        "version": "0.1"
+    },
     features=[
         credit_risk_feature_view,
     ],
