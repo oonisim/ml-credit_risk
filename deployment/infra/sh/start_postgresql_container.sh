@@ -3,7 +3,7 @@ set -e
 DIR="$(realpath "$(dirname "${0}")")"
 cd "${DIR}" || exit
 
-. ./config.sh
+. _config.sh
 
 #--------------------------------------------------------------------------------
 # Get PostgreSQL Image

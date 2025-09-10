@@ -13,7 +13,7 @@ PG_FEAST_PORT="5432"
 PG_OFFLINE_HOST="localhost"
 PG_OFFLINE_PORT="5432"
 PG_OFFLINE_USER='dbadm'
-PG_OFFLINE_DB="features"
+PG_OFFLINE_DB="offline_features"
 PG_OFFLINE_SCHEMA='credit'
 
 PGPASS_FILE="${HOME}/.pgpass"

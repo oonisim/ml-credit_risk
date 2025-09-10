@@ -2,15 +2,16 @@
 set -e
 DIR="$(realpath "$(dirname "${0}")")"
 cd "${DIR}" || exit
-. ./config.sh
+
+. _config.sh
+. _utility.sh
 
 echo "--------------------------------------------------------------------------------"
 echo "Creating PostgreSQL offline store database ${PG_OFFLINE_DB} if not exists..."
 echo "--------------------------------------------------------------------------------"
 
-# read -r -s -p "Enter FEAST offline store database password: " PG_OFFLINE_PASSWORD
-# echo  # Add newline after password input
-PG_OFFLINE_PASSWORD=
+read -r -s -p "Enter FEAST offline store database password: " PG_OFFLINE_PASSWORD
+echo  # Add newline after password input
 
 psql -h "${PG_OFFLINE_HOST}" -p "${PG_OFFLINE_PORT}" -U "${PG_ADMIN_USER}" -lqt \
   | cut -d \| -f 1 \
@@ -51,6 +52,14 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA ${PG_OFFLINE_SCHEMA}
     GRANT ALL ON SEQUENCES TO ${PG_OFFLINE_USER};
 ALTER USER ${PG_OFFLINE_USER} SET search_path TO ${PG_OFFLINE_SCHEMA}, public;
 "
+
+echo "Setting up PostgreSQL password file (.pgpass)..."
+setup_pgpass_entry \
+  "${PG_OFFLINE_HOST}" \
+  "${PG_OFFLINE_PORT}" \
+  "${PG_OFFLINE_DB}" \
+  "${PG_OFFLINE_USER}" \
+  "${PG_OFFLINE_PASSWORD}"
 
 echo "Setup completed! Connect with:"
 echo "psql -h ${PG_OFFLINE_HOST} -p ${PG_OFFLINE_PORT} -U ${PG_OFFLINE_USER} -d ${PG_OFFLINE_DB}"
