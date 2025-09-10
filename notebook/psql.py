@@ -1,3 +1,4 @@
+"""PostgreSQL module"""
 import logging
 import os
 from contextlib import contextmanager
@@ -61,7 +62,7 @@ def batch_insert_with_progress(df, parameters, batch_size=1000):
                     method='multi'
                 )
 
-            print(f"✅ Successfully inserted all {total_rows} rows!")
+            print(f"Successfully inserted all {total_rows} rows!")
 
     except Exception as e:
         print(f"❌ Error during batch insert: {e}")
@@ -97,9 +98,9 @@ def exists_table(parameters):
             exists = table_name in available_tables
 
             if exists:
-                logging.info(f"✅ Table '{table_reference}' exists")
+                logging.info(f"Table '{table_reference}' exists")
             else:
-                logging.info(f"❌ Table '{table_reference}' does not exist")
+                logging.info(f"Table '{table_reference}' does not exist")
                 logging.info(f"Available tables: {available_tables}")
 
             return exists
@@ -133,6 +134,26 @@ def truncate(parameters):
         with engine.connect() as conn:
             conn.execute(text(f"TRUNCATE TABLE {schema}.{table_name}"))
             conn.commit()
+
+
+def select_one(parameters):
+    table_name = parameters['table_name']
+    schema = parameters.get('schema', 'public')
+    try:
+        with get_engine(parameters=parameters) as engine:
+            with engine.connect() as conn:
+                # Add LIMIT 1 to SQL query
+                result = conn.execute(text(f"SELECT * FROM {schema}.{table_name} LIMIT 1"))
+                first_row = result.fetchone()
+                if first_row:
+                    columns = list(result.keys())
+                    return columns, first_row
+                else:
+                    logging.error("no record found")
+                    return None
+    except Exception as e:
+        logging.error(f"Error getting table list: {e}")
+        return []
 
 
 def get_password_from_pgpass(parameters, pgpass_file=None):

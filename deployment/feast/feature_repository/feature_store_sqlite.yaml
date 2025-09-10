@@ -12,7 +12,6 @@ project: feature_store_tutorial
 #   #    check_same_thread: False
 registry:
     registry_type: sql
-    # path: postgresql://postgres:P@ssword@localhost:5432/feast_registry
     path: postgresql://postgres@localhost:5432/feast_registry
     cache_ttl_seconds: 60
     sqlalchemy_config_kwargs:
@@ -22,16 +21,9 @@ registry:
     #    timeout: 30
     #    check_same_thread: False
 
-# The provider primarily specifies default offline / online stores & storing the registry in a given cloud
 provider: local
 offline_store:
-  type: postgres
-  host: localhost
-  port: 5432
-  database: offline_store
-  db_schema: credit_risk
-  user: dbadm
-  password: P@ssword
+  type: file
 online_store:
   type: sqlite
   path: data/online_store.db
