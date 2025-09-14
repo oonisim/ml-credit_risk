@@ -9,3 +9,4 @@ matplotlib==3.10.6
 plotly==6.3.0
 seaborn==0.13.2
 scikit-learn==1.7.2
+pylint==3.3.8
