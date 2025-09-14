@@ -30,5 +30,5 @@ create_postgres_db_and_user \
   "${PG_ONLINE_SCHEMA}" \
   "${PG_ONLINE_HOST}" \
   "${PG_ONLINE_PORT}" \
-  "${PG_ONLINE_PASSWORD:-}" \
+  "${PG_ONLINE_PASSWORD}" \
   "${PG_ADMIN_USER}"

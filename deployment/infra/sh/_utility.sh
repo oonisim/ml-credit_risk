@@ -25,11 +25,16 @@ check_postgres_ready() {
 # Create a PostgreSQL password entry in ${HOME}/.pgpass
 # setup_pgpass_entry "localhost" "5432" "mydatabase" "postgres" "mypassword"
 setup_pgpass_entry() {
+
+    echo "setup_pgpass_entry: "
     local host="${1:-localhost}"
     local port="${2:-5432}"
     local database="${3:-*}"
     local user="${4:-postgres}"
-    local password="${5:-${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}}"
+    local password="${5:?Provide POSTGRES_PASSWORD}"
+
+    echo "setup_pgpass_entry: password=${password}"
+
 
     echo "host:${host} port:${port} database:${database} user:${user}"
 

@@ -1,5 +1,14 @@
-"""Exploratory Data Analysis"""
+"""Exploratory Data Analysis
+DO NOT mutate the data to explore. Transformation and exploration are separate concerns.
+"""
+from typing import (
+    List,
+    Sequence,
+    Tuple,
+)
 import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 import plotly.offline as py
 import plotly.tools as tls
 import plotly.graph_objs as go
@@ -7,31 +16,110 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def analyse_target_distribution(df: pd.DataFrame):
-    """Analyse the target label (good load or bad loan)
+def add_generation_category(
+        df: pd.DataFrame,
+        bins: Sequence[int] = (18, 25, 35, 60, 100),
+        labels: Sequence[str] = ("Student", "Young", "Adult", "Senior"),
+) -> pd.DataFrame:
+    """
+    Discretize numerical ages into categorical age groups.
     Args:
-        df: data
+        df (pd.DataFrame): Input DataFrame containing an 'Age' column.
+        bins (Sequence[int]): Boundaries of age intervals (default: (18, 25, 35, 60, 100)).
+        labels (Sequence[str]): Labels for the intervals (default: "Student", "Young", "Adult", "Senior").
+
+    Returns:
+        pd.DataFrame: A copy of the DataFrame with an additional 'Generation' categorical column.
+    """
+    df_copy = df.copy()
+    df_copy["Generation"] = pd.cut(df_copy["Age"], bins=bins, labels=labels)
+    return df_copy
+
+
+def add_credit_amount_category(
+        df,
+        bins=(0, 5000, 10000, 15000, 20000, float("inf")),
+        labels=("<5K", "5-10K", "10-15K", "15-20K", "20K+")
+) -> pd.DataFrame:
+    """
+    Discretize numerical ages into categorical age groups.
+    Args:
+        df (pd.DataFrame): Input DataFrame containing a 'Credit amount' column.
+        bins (Sequence[int]): Boundaries of credit amount intervals (default: (0, 5000, 10000, 15000, 20000, inf)).
+        labels (Sequence[str]): Labels for the intervals (default: ("<5K", "5-10K", "10-15K", "15-20K", "20K+")).
+
+    Returns:
+        pd.DataFrame: Transformed DataFrame with new 'Amount' categorical column added.
+    """
+    df_copy= df.copy()
+    df_copy["Amount"] = pd.cut(df_copy["Credit amount"], bins=bins, labels=labels)
+    return df_copy
+
+
+def run_eda_enrich_pipeline(
+        df: pd.DataFrame,
+        categorical_cols: List[str],
+        numeric_cols: List[str]
+) -> Tuple[pd.DataFrame, List[str], List[str]]:
+    """Apply feature engineering transformations on the input DataFrame.
+    Steps:
+        1. Bin 'Age' into categorical 'Generation' groups.
+        2. Bin 'Credit amount' into categorical intervals.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame with columns 'Age' and 'Credit amount'.
+        categorical_cols: categorical column names in df
+        numeric_cols: numeric column names in df
+
+    Returns: Tuple(
+        A copy of the DataFrame with an additional 'Amount' and 'Generation' categorical columns,
+        List of categorical columns,
+        List of numerical columns
+    )
+    """
+    age_transformer = FunctionTransformer(add_generation_category, validate=False)
+    credit_amount_transformer = FunctionTransformer(add_credit_amount_category, validate=False)
+
+    transformation_pipeline = Pipeline([
+        ("age_binning", age_transformer),
+        ("credit_binning", credit_amount_transformer),
+    ])
+    categorical_cols += ["Generation", "Amount"]
+    numeric_cols.remove('Age')
+    numeric_cols.remove('Credit amount')
+
+    return transformation_pipeline.fit_transform(df), categorical_cols, numeric_cols
+
+
+def analyse_target_distribution(df: pd.DataFrame):
+    """
+    Visualize the distribution of the target variable 'Risk' as a grouped bar chart.
+
+    This function separates the target values into 'Good credit' (Risk=False)
+    and 'Bad credit' (Risk=True), counts their occurrences, and plots them using Plotly.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing a boolean or 0/1 'Risk' column.
+
+    Returns:
+        None. Displays an interactive Plotly bar chart showing the target distribution.
     """
     good = go.Bar(
-        x=df[df["Risk"] == False]["Risk"].value_counts().index.values,
-        y=df[df["Risk"] == False]["Risk"].value_counts().values,
+        x=df[~df["Risk"].astype(bool)]["Risk"].value_counts().index.values,
+        y=df[~df["Risk"].astype(bool)]["Risk"].value_counts().values,
         name='Good credit'
     )
 
     bad = go.Bar(
-        x=df[df["Risk"] == True]["Risk"].value_counts().index.values,
-        y=df[df["Risk"] == True]["Risk"].value_counts().values,
+        x=df[df["Risk"].astype(bool)]["Risk"].value_counts().index.values,
+        y=df[df["Risk"].astype(bool)]["Risk"].value_counts().values,
         name='Bad credit'
     )
 
     data = [good, bad]
     layout = go.Layout(
-        yaxis=dict(
-            title='Count'
-        ),
-        xaxis=dict(
-            title='Risk Variable'
-        ),
+        yaxis={"title": 'Count'},
+        xaxis={"title": 'Risk Variable'},
         title='Target label distribution'
     )
 
@@ -40,64 +128,69 @@ def analyse_target_distribution(df: pd.DataFrame):
 
 
 def analyse_per_generation(df: pd.DataFrame):
+    """Analyze generation category to credit amount correlation.
+    Args:
+        df: data to explore
+    """
     # Age bins
     interval = (18, 25, 35, 60, 100)
     cats = ['Student', 'Young', 'Adult', 'Senior']
     df["Generation"] = pd.cut(df.Age, interval, labels=cats)
 
-    df_good = df[df["Risk"] == False]
-    df_bad = df[df["Risk"] == True]
+    df_good = df[~df["Risk"].astype(bool)]
+    df_bad = df[df["Risk"].astype(bool)]
 
     good = go.Box(
         y=df_good["Credit amount"],
         x=df_good["Generation"],
         name='Good credit',
-        marker=dict(
-            color='#3D9970'
-        )
+        marker={'color': '#3D9970'}
     )
 
     bad = go.Box(
         y=df_bad['Credit amount'],
         x=df_bad['Generation'],
         name='Bad credit',
-        marker=dict(
-            color='#FF4136'
-        )
+        marker={'color': '#FF4136'}
     )
 
     data = [good, bad]
     layout = go.Layout(
         title='Age Categorical',
-        yaxis=dict(
-            title='Credit Amount (US Dollar)',
-            zeroline=False
-        ),
-        xaxis=dict(
-            title='Age category'
-        ),
+        yaxis={
+            "title": "Credit Amount (US Dollar)",
+            "zeroline": False
+        },
+        xaxis={
+            "title": "Age category"
+        },
         boxmode='group',
-        annotations=[
-            dict(
-                x=0.5,
-                y=1.2,
-                xref='paper',
-                yref='paper',
-                showarrow=False,
-                text="Senior (60-100), Adult (35-60), Young (25-35), Student (18-25)",
-                font=dict(size=14)
-            )
-        ]
+        annotations=[{
+            "x": 0.5,
+            "y": 1.2,
+            "xref": 'paper',
+            "yref": 'paper',
+            "showarrow": False,
+            "text": "Senior(60 - 100), Adult(35 - 60), Young(25 - 35), Student(18 - 25)",
+            "font": {"size": 14}
+        }]
     )
     fig = go.Figure(data=data, layout=layout)
     py.iplot(fig, filename='box-age-cat')
 
 
 def risk_per_generation(df: pd.DataFrame):
-    interval = (18, 25, 35, 60, 100)
-    cats = ['Student', 'Young', 'Adult', 'Senior']
-    df["Generation"] = pd.cut(df.Age, interval, labels=cats)
+    """
+    Plot the mean risk for each generation.
 
+    Args:
+        df (pd.DataFrame): DataFrame containing at least the columns:
+            - 'Generation': categorical generation label
+            - 'Risk': binary or numeric risk indicator (0/1 or proportion)
+
+    Returns:
+        None: Displays a bar plot showing the mean risk per generation.
+    """
     plt.figure(figsize=(4,3))
     sns.barplot(
         x='Generation',
@@ -112,18 +205,27 @@ def risk_per_generation(df: pd.DataFrame):
 
 
 def risk_per_credit_amount_bin(df: pd.DataFrame):
-    # Bin credit amount into 10 intervals (equal-width bins)
-    interval = (0, 5000, 10000, 15000, 20000)
-    cats = [0, 1, 2, 3]
-    df["Amount"] = pd.cut(df['Credit amount'], interval, labels=cats)
+    """
+    Plot credit amount distribution and mean risk per bin for each generation.
 
-    # Create subplots for each generation
-    generations = df['Generation'].unique()
-    n_generations = len(generations)
+    This function creates a subplot for each unique generation in the 'Generation'
+    column. Each subplot shows:
+        - A bar chart (left y-axis) of counts of samples in each credit amount bin.
+        - A bar chart (right y-axis) of mean risk for each credit amount bin.
 
-    fig, axes = plt.subplots(2, 2, figsize=(15, 6))
+    Args:
+        df (pd.DataFrame): Input DataFrame containing at least the columns:
+            - 'Generation': categorical generation label
+            - 'Amount': credit amount bins
+            - 'Risk': binary or numeric risk indicator (0/1 or proportion)
+
+    Returns:
+        None: Displays the plots using matplotlib and seaborn.
+    """
+    _, axes = plt.subplots(2, 2, figsize=(15, 6))
     axes = axes.flatten()
 
+    generations = df['Generation'].unique()
     for i, gen in enumerate(generations):
         if i >= len(axes):
             break
@@ -165,80 +267,103 @@ def risk_per_credit_amount_bin(df: pd.DataFrame):
         axes[i].set_visible(True)
 
     plt.tight_layout()
-    # custom_ylim = (0, 0.1)
-
-    # Setting the values for all axes.
-    # plt.setp(axes, ylim=custom_ylim)
     plt.show()
 
 
 def analyse_per_property(df: pd.DataFrame):
-    df_good = df[df["Risk"] == False]
-    df_bad = df[df["Risk"] == True]
+    """
+    Plot grouped box plots of credit amounts per property category,
+    split by good vs bad credit risk.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing at least the columns:
+            - 'Housing': categorical property/housing type
+            - 'Credit amount': numeric credit amount
+            - 'Risk': boolean or 0/1 indicator of credit risk
+
+    Returns:
+        None: Displays the plot using Plotly.
+    """
+    df_good = df[~df["Risk"].astype(bool)]
+    df_bad = df[df["Risk"].astype(bool)]
 
     good = go.Box(
         x=df_good["Housing"],
         y=df_good["Credit amount"],
         name='Good credit',
-        marker=dict(
-            color='#3D9970'
-        )
+        marker = {
+            "color": "#3D9970"
+        }
     )
     bad = go.Box(
         x=df_bad['Housing'],
         y=df_bad['Credit amount'],
         name="Bad Credit",
-        marker=dict(
-            color='#FF4136'
-        )
+        marker = {
+            "color": "#FF4136"
+        }
     )
 
     data = [good, bad]
     layout = go.Layout(
         title='Property Categorical',
-        yaxis=dict(
-            title='Credit Amount (US Dollar)',
-            zeroline=False
-        ),
-        xaxis=dict(
-            title='Property Category'
-        ),
+        yaxis={
+            "title": "Credit Amount (US Dollar)",
+            "zeroline": False
+        },
+        xaxis={
+            "title": "Property Category"
+        },
         boxmode='group',
     )
 
     fig = go.Figure(data=data, layout=layout)
     py.iplot(fig, filename='Housing-Grouped')
-    
-    
+
+
 def analyse_per_gender(df: pd.DataFrame):
+    """
+    Visualize credit risk by gender using both counts and credit amount distributions.
+
+    This function creates a subplot with two visualizations:
+    1. Bar plot showing the count of good and bad credit by gender.
+    2. Box plot showing the distribution of credit amounts for good and bad credit by gender.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing at least the columns:
+            - "Sex": categorical gender column.
+            - "Risk": boolean indicating credit risk (True = bad, False = good).
+            - "Credit amount": numerical credit amount.
+
+    Returns:
+        None. Displays an interactive Plotly figure with the visualizations.
+    """
     good = go.Bar(
-        x=df[df["Risk"] == False]["Sex"].value_counts().index.values,
-        y=df[df["Risk"] == False]["Sex"].value_counts().values,
+        x=df[~df["Risk"].astype(bool)]["Sex"].value_counts().index.values,
+        y=df[~df["Risk"].astype(bool)]["Sex"].value_counts().values,
         name='Good credit'
     )
 
     # First plot 2
     bad = go.Bar(
-        x=df[df["Risk"] == True]["Sex"].value_counts().index.values,
-        y=df[df["Risk"] == True]["Sex"].value_counts().values,
+        x=df[df["Risk"].astype(bool)]["Sex"].value_counts().index.values,
+        y=df[df["Risk"].astype(bool)]["Sex"].value_counts().values,
         name="Bad Credit"
     )
 
     # Second plot
     trace2 = go.Box(
-        x=df[df["Risk"] == False]["Sex"],
-        y=df[df["Risk"] == False]["Credit amount"],
+        x=df[~df["Risk"].astype(bool)]["Sex"],
+        y=df[~df["Risk"].astype(bool)]["Credit amount"],
         name=good.name
     )
 
     # Second plot 2
     trace3 = go.Box(
-        x=df[df["Risk"] == True]["Sex"],
-        y=df[df["Risk"] == True]["Credit amount"],
+        x=df[df["Risk"].astype(bool)]["Sex"],
+        y=df[df["Risk"].astype(bool)]["Credit amount"],
         name=bad.name
     )
-
-    data = [good, bad, trace2, trace3]
 
     fig = tls.make_subplots(
         rows=1,
@@ -258,8 +383,24 @@ def analyse_per_gender(df: pd.DataFrame):
 
 
 def analyse_risk_per_saving(df: pd.DataFrame):
-    df_good = df[df["Risk"] == False]
-    df_bad = df[df["Risk"] == True]
+    """
+    Visualize credit risk by saving amount category (little, moderate, quite rich, rich)
+
+    This function creates a subplot with two visualizations:
+    1. Bar plot showing the count of good and bad credit per saving amount category.
+    2. Box plot showing the distribution of credit amounts for good and bad credit per saving account category.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing at least the columns:
+            - "Saving accounts": categorical saving account column.
+            - "Risk": boolean indicating credit risk (True = bad, False = good).
+            - "Credit amount": numerical credit amount.
+
+    Returns:
+        None. Displays an interactive Plotly figure with the visualizations.
+    """
+    df_good = df[~df["Risk"].astype(bool)]
+    df_bad = df[df["Risk"].astype(bool)]
 
     count_good = go.Bar(
         x=df_good["Saving accounts"].value_counts().index.values,
@@ -267,8 +408,8 @@ def analyse_risk_per_saving(df: pd.DataFrame):
         name='Good credit'
     )
     count_bad = go.Bar(
-        x=df_bad["Saving accounts"].value_counts().index.values,
-        y=df_bad["Saving accounts"].value_counts().values,
+        x=df_bad["Saving accounts"].value_counts().index.values,    # saving amount category
+        y=df_bad["Saving accounts"].value_counts().values,          # total per saving amount category
         name='Bad credit'
     )
 
@@ -301,15 +442,27 @@ def analyse_risk_per_saving(df: pd.DataFrame):
     py.iplot(fig, filename='combined-savings')
 
 
-def risk_correlation(df: pd.DataFrame, categorical_cols):
-    import seaborn as sns
-    import matplotlib.pyplot as plt
+def risk_correlation(df: pd.DataFrame, categorical_cols: List[str]):
+    """
+    Plot the proportion of Risk (target variable) across multiple categorical features.
 
+    For each categorical column in `categorical_cols`, this function calculates
+    the proportion of each Risk value (e.g., 0/1 or True/False) for each category
+    and plots it as a bar chart. Multiple plots are arranged in a grid layout.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing the data.
+        categorical_cols (list of str): List of categorical column names to analyze.
+
+    Returns:
+        None. Displays a matplotlib figure with subplots for each categorical feature.
+    """
     ncols = 3
     nrows = (len(categorical_cols) + ncols - 1) // ncols
     fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(18, 12))
     axes = axes.flatten()
 
+    i = -1  # default value if loop doesn't run
     for i, col in enumerate(categorical_cols):
         ax = axes[i]
         # Categorical: proportions of Risk within each category
@@ -332,10 +485,20 @@ def risk_correlation(df: pd.DataFrame, categorical_cols):
 
 
 def risk_heatmap(df: pd.DataFrame, categorical_cols):
-    heatmap_data = pd.DataFrame()
+    """
+    Plots a heatmap showing the proportion of risk (target=1)
+    for each category of the given categorical features.
 
+    Args:
+        df (pd.DataFrame): Input DataFrame containing categorical features and 'Risk' column.
+        categorical_cols (list): List of categorical column names to analyze.
+    """
+    if 'Risk' not in df.columns:
+        raise ValueError("DataFrame must contain a 'Risk' column.")
+
+    heatmap_data = pd.DataFrame()
     for col in categorical_cols:
-        prop = df.groupby(col)['Risk'].mean()  # works if target is 0/1
+        prop = df.groupby(col)['Risk'].mean().fillna(0)  # works if target is 0/1
         prop.name = col
         heatmap_data = pd.concat([heatmap_data, prop], axis=1)
 
@@ -348,6 +511,7 @@ def risk_heatmap(df: pd.DataFrame, categorical_cols):
         heatmap_data,
         annot=True,
         cmap='coolwarm',
+        fmt=".2f",
         cbar_kws={'label': 'Proportion of Risk=True'},
         center=0.25,  # values > 0.3 shift towards red, < 0.3 towards blue
         linewidths=.5,

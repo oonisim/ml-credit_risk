@@ -18,7 +18,7 @@ if psql -h "${PG_FEAST_HOST}" \
     echo "Database $PG_FEAST_DB already exists"
 else
     echo "Creating database ${PG_FEAST_DB}..."
-    PG_FEAST_PASSWORD="${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}}"
+    PG_FEAST_PASSWORD="${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}"
 
     psql -h "${PG_FEAST_HOST}" \
          -p "${PG_FEAST_PORT}" \

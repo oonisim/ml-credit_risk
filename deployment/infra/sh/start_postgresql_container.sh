@@ -24,24 +24,28 @@ fi
 #--------------------------------------------------------------------------------
 # Setup postgres user password
 #--------------------------------------------------------------------------------
-if [[ -z "${POSTGRES_PASSWORD:-}" ]]; then
+if [[ -z "${POSTGRES_PASSWORD}" ]]; then
   read -r -s -p "Enter PostgreSQL password: " POSTGRES_PASSWORD
+
+  echo "------- $POSTGRES_PASSWORD"
   echo
-  if [[ -z "$POSTGRES_PASSWORD" ]]; then
+
+  echo
+  if [[ -z "${POSTGRES_PASSWORD}" ]]; then
     echo "Error: POSTGRES_PASSWORD cannot be empty" >&2
     exit 1
   fi
   # Unset when the shell exits
   trap 'unset POSTGRES_PASSWORD' EXIT
-
-  echo "Setting up PostgreSQL password file (.pgpass) for user ${PG_ADMIN_USER} if not set..."
-  setup_pgpass_entry \
-    "localhost" \
-    "5432" \
-    "*" \
-    "${PG_ADMIN_USER}" \
-    "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}"
 fi
+
+echo "Setting up PostgreSQL password file (.pgpass) for user ${PG_ADMIN_USER} if not set..."
+setup_pgpass_entry \
+  "localhost" \
+  "5432" \
+  "*" \
+  "${PG_ADMIN_USER}" \
+  "${POSTGRES_PASSWORD}"
 
 
 #--------------------------------------------------------------------------------
