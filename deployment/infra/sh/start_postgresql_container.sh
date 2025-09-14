@@ -26,10 +26,6 @@ fi
 #--------------------------------------------------------------------------------
 if [[ -z "${POSTGRES_PASSWORD}" ]]; then
   read -r -s -p "Enter PostgreSQL password: " POSTGRES_PASSWORD
-
-  echo "------- $POSTGRES_PASSWORD"
-  echo
-
   echo
   if [[ -z "${POSTGRES_PASSWORD}" ]]; then
     echo "Error: POSTGRES_PASSWORD cannot be empty" >&2

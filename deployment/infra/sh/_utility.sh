@@ -33,11 +33,7 @@ setup_pgpass_entry() {
     local user="${4:-postgres}"
     local password="${5:?Provide POSTGRES_PASSWORD}"
 
-    echo "setup_pgpass_entry: password=${password}"
-
-
     echo "host:${host} port:${port} database:${database} user:${user}"
-
     local pgpass_file="${HOME}/.pgpass"
     local pgpass_entry="${host}:${port}:${database}:${user}:${password}"
 
