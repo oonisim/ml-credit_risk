@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #--------------------------------------------------------------------------------
-# FEAST Online Store Database Creation Script.
+# FEAST Offline Store Database Creation Script.
 # NOTE: The script must be idempotent.
 #--------------------------------------------------------------------------------
 set -euo pipefail
@@ -14,21 +14,21 @@ cd "${DIR}" || exit
 
 echo
 echo "--------------------------------------------------------------------------------"
-echo "Creating PostgreSQL offline store database ${PG_OFFLINE_DB} if not exists..."
+echo "Creating PostgreSQL online store database ${PG_ONLINE_DB} if not exists..."
 echo "--------------------------------------------------------------------------------"
-if [[ -z "${PG_OFFLINE_PASSWORD:-}" ]]; then
-  echo "Need the password for the offline store database user ${PG_OFFLINE_USER}."
-  read -r -s -p "Enter the offline store database user password: " PG_OFFLINE_PASSWORD
+if [[ -z "${PG_ONLINE_PASSWORD:-}" ]]; then
+  echo "Need the password for the online store database user ${PG_ONLINE_USER}."
+  read -r -s -p "Enter the offline store database user password: " PG_ONLINE_PASSWORD
   echo  # Add newline after password input
-  trap 'unset PG_OFFLINE_PASSWORD' EXIT
+  trap 'unset PG_ONLINE_PASSWORD' EXIT
 fi
 
 
 create_postgres_db_and_user \
-  "${PG_OFFLINE_DB}" \
-  "${PG_OFFLINE_USER}" \
-  "${PG_OFFLINE_SCHEMA}" \
-  "${PG_OFFLINE_HOST}" \
-  "${PG_OFFLINE_PORT}" \
-  "${PG_OFFLINE_PASSWORD:-}" \
+  "${PG_ONLINE_DB}" \
+  "${PG_ONLINE_USER}" \
+  "${PG_ONLINE_SCHEMA}" \
+  "${PG_ONLINE_HOST}" \
+  "${PG_ONLINE_PORT}" \
+  "${PG_ONLINE_PASSWORD:-}" \
   "${PG_ADMIN_USER}"
