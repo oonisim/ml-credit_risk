@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #--------------------------------------------------------------------------------
-# FEAST Offline Store Database Creation Script.
+# FEAST Online Store Database Creation Script.
 # NOTE: The script must be idempotent.
 #--------------------------------------------------------------------------------
 set -euo pipefail
