@@ -20,9 +20,23 @@ offline_store:
   user: dbadm
   password: P@ssword
 
+# Cannot use PostgreSQL as online store.
+# https://github.com/feast-dev/feast/issues/5613
+# from feast.infra.online_stores.contrib.postgres import PostgreSQLOnlineStoreConfig
+# ModuleNotFoundError: No module named 'feast.infra.online_stores.contrib'
+#online_store:
+#  type: postgres
+#  host: localhost
+#  port: 5432
+#  database: online_features
+#  db_schema: credit
+#  user: dbadm
+#  password: P@ssword
+
 online_store:
   type: sqlite
   path: data/online_store.db
+
 
 entity_key_serialization_version: 3
 # By default, no_auth for authentication and authorization,

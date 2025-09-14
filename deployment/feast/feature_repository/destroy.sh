@@ -3,4 +3,8 @@ set -e
 DIR="$(realpath "$(dirname "${0}")")"
 cd "${DIR}" || exit
 
-feast teardown
+echo
+echo "--------------------------------------------------------------------------------"
+echo "Running feast teardown"
+echo "--------------------------------------------------------------------------------"
+feast teardown || echo "teardown failed."
