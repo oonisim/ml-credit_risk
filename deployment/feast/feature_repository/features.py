@@ -30,7 +30,8 @@ project = Project(
 # https://docs.feast.dev/reference/data-sources/postgres
 credit_risk_feature_source = PostgreSQLSource(
     name="customer_credit_risk_feature_source",
-    query="SELECT * FROM credit.customer_credit_risk_features",
+    # The table name must match with the offline table insert SQL.
+    query="SELECT * FROM credit.customer_credit_risk_offline_features",
     timestamp_field="event_timestamp",
     created_timestamp_column="created",
 )
@@ -86,7 +87,7 @@ credit_risk_feature_view = FeatureView(
 )
 
 # This groups features into a model version
-customer_credit_risk_features = FeatureService(
+customer_credit_risk_feature_service = FeatureService(
     name="customer_credit_risk_feature_service",
     description="Features for Customer Credit Dirk Model",
     tags={

@@ -19,6 +19,7 @@ offline_store:
   db_schema: credit
   user: dbadm
   password: P@ssword
+
 online_store:
   type: sqlite
   path: data/online_store.db

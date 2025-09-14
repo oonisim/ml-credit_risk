@@ -6,6 +6,7 @@ cd "${DIR}" || exit
 . _config.sh
 . _utility.sh
 
+echo
 echo "--------------------------------------------------------------------------------"
 echo "Creating FEAST Registry database in PostgreSQL if it doesn't exist..."
 echo "--------------------------------------------------------------------------------"
@@ -24,7 +25,7 @@ else
          -U "${PG_ADMIN_USER}" \
          -c "CREATE DATABASE ${PG_FEAST_DB} WITH ENCODING = 'UTF8';"
 
-    echo "Setting up PostgreSQL password file (.pgpass)..."
+    echo "Setting up PostgreSQL password file (.pgpass) for user ${PG_FEAST_USER}..."
     setup_pgpass_entry \
       "${PG_FEAST_HOST}" \
       "${PG_FEAST_PORT}" \
@@ -32,5 +33,6 @@ else
       "${PG_FEAST_USER}" \
       "${PG_FEAST_PASSWORD}"
 
-    echo "Database ${PG_FEAST_DB} created successfully."
+    echo "Database ${PG_FEAST_DB} created successfully. Connect with:"
+    echo "psql -h ${PG_OFFLINE_HOST} -p ${PG_OFFLINE_PORT} -U ${PG_OFFLINE_USER} -d ${PG_OFFLINE_DB}"
 fi
