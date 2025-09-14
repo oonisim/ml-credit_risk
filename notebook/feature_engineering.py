@@ -89,7 +89,8 @@ def run_feature_engineering_pipeline(
         df: pd.DataFrame,
         categorical_cols: List[str],
         numeric_cols: List[str],
-        column_rename_map: Dict[str, str]
+        label_column: str,
+        column_rename_map: Dict[str, str],
 ) -> pd.DataFrame:
     """Apply feature engineering pipeline: NA imputation + categorical encoding.
 
@@ -97,6 +98,7 @@ def run_feature_engineering_pipeline(
         df (pd.DataFrame): Input DataFrame.
         categorical_cols: list of categorical columns
         numeric_cols: List of numerical columns
+        label_column: Label column name
         column_rename_map: Column renaming map
 
     Returns:
@@ -104,7 +106,7 @@ def run_feature_engineering_pipeline(
     """
     selector_transformer = FunctionTransformer(
         drop_unwanted_columns,
-        kw_args={'keep_cols': numeric_cols + categorical_cols},
+        kw_args={'keep_cols': numeric_cols + categorical_cols + [label_column]},
         validate=False
     )
     imputer_transformer: FunctionTransformer = FunctionTransformer(

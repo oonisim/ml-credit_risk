@@ -46,6 +46,7 @@ credit_risk_feature_view = FeatureView(
     # for both materialization of features into a store, and are used as references
     # during retrieval for building a training dataset or serving features
     schema=[
+        Field(name="risk", dtype=Float32),
         Field(name="purpose_business", dtype=Float32),
         Field(name="purpose_car", dtype=Float32),
         Field(name="purpose_domestic_appliances", dtype=Float32),
@@ -63,7 +64,7 @@ credit_risk_feature_view = FeatureView(
         Field(name="saving_accounts_moderate", dtype=Float32),
         Field(name="saving_accounts_no_inf", dtype=Float32),
         Field(name="saving_accounts_quite_rich", dtype=Float32),
-        Field(name="savings_accounts_rich", dtype=Float32),
+        Field(name="saving_accounts_rich", dtype=Float32),
         Field(name="checking_account_little", dtype=Float32),
         Field(name="checking_account_moderate", dtype=Float32),
         Field(name="checking_account_no_inf", dtype=Float32),
