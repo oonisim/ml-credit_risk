@@ -34,7 +34,7 @@ project = Project(
 
 #--------------------------------------------------------------------------------
 # Physical Data Source where actual Features for ML consumption are stored.
-# FEAST Offline Store is basically same with FEAST Data Source.
+# FESST Offline Store is backed by Physical Data Source”
 #--------------------------------------------------------------------------------
 # https://docs.feast.dev/reference/data-sources/postgres
 credit_risk_feature_source = PostgreSQLSource(
@@ -59,7 +59,7 @@ credit_risk_feature_view = FeatureView(
     name="customer_credit_risk_feature_view",
     source=credit_risk_feature_source,    # Link to the raw data storage technology
     entities=[customer],
-    ttl=timedelta(minutes=1),
+    ttl=timedelta(hours=1),
     # The list of features defined below act as a schema to both define features
     # for both materialization of features into a store, and are used as references
     # during retrieval for building a training dataset or serving features
@@ -111,7 +111,7 @@ credit_risk_feature_view = FeatureView(
 #------------------------------------------------------------------------------------------
 customer_credit_risk_feature_service = FeatureService(
     name="customer_credit_risk_feature_service",
-    description="Features for Customer Credit Dirk Model",
+    description="Features for Customer Credit Risk Model",
     tags={
         "version": "0.1"
     },
