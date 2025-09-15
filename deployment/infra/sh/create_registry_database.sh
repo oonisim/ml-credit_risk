@@ -34,5 +34,5 @@ else
       "${PG_FEAST_PASSWORD}"
 
     echo "Database ${PG_FEAST_DB} created successfully. Connect with:"
-    echo "psql -h ${PG_OFFLINE_HOST} -p ${PG_OFFLINE_PORT} -U ${PG_OFFLINE_USER} -d ${PG_OFFLINE_DB}"
+    echo "psql -h ${PG_FEAST_HOST} -p ${PG_FEAST_PORT} -U ${PG_FEAST_USER} -d ${PG_FEAST_DB}"
 fi

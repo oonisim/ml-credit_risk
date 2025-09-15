@@ -1,5 +1,8 @@
 # Install Mac OSX PostgreSQL client.
 if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Installing OpenMP ..."
+    brew install libomp
+
     echo "Installing Mac OSX PostgreSQL client..."
     brew install libpq
 
