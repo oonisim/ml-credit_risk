@@ -15,18 +15,27 @@ from feast.infra.offline_stores.contrib.postgres_offline_store.postgres_source i
 
 from feast.feature_logging import LoggingConfig
 from feast.infra.offline_stores.file_source import FileLoggingDestination
-from feast.types import Float32, Int64
-
+from feast.types import (
+    Float32,
+    #Int64
+)
 from utility import (
     get_yaml_value
 )
 
-
+#--------------------------------------------------------------------------------
+# A FEAST Project is a namespace in which related FEAST objects are managed
+# in the way isolated from those in other projects.
+#--------------------------------------------------------------------------------
 project = Project(
     name=get_yaml_value("feature_store.yaml", "project", "customer_credit_risk"),
     description="A project for customer credit risk"
 )
 
+#--------------------------------------------------------------------------------
+# Physical Data Source where actual Features for ML consumption are stored.
+# FEAST Offline Store is basically same with FEAST Data Source.
+#--------------------------------------------------------------------------------
 # https://docs.feast.dev/reference/data-sources/postgres
 credit_risk_feature_source = PostgreSQLSource(
     name="customer_credit_risk_feature_source",
@@ -36,10 +45,19 @@ credit_risk_feature_source = PostgreSQLSource(
     created_timestamp_column="created",
 )
 
+#--------------------------------------------------------------------------------
+# Entity which is a key to identify a class e.g. customer or product.
+# Each class instance is a record which has its Entity ID (e.g. customer_id).
+# STAR Schema equivalent would be Dimension.
+#--------------------------------------------------------------------------------
 customer = Entity(name="customer", join_keys=["entity_id"])
 
+#--------------------------------------------------------------------------------
+# View to the Features in the Data Source.
+#--------------------------------------------------------------------------------
 credit_risk_feature_view = FeatureView(
     name="customer_credit_risk_feature_view",
+    source=credit_risk_feature_source,    # Link to the raw data storage technology
     entities=[customer],
     ttl=timedelta(minutes=1),
     # The list of features defined below act as a schema to both define features
@@ -84,11 +102,13 @@ credit_risk_feature_view = FeatureView(
         Field(name="amount_4", dtype=Float32),
         # Field(name="avg_daily_trips", dtype=Int64, description="Average daily trips"),
     ],
-    source=credit_risk_feature_source,             # Link to the raw data storage technology
-    online=True,                                    # Tell FEAST to materialise into online store.
+    online=True,                          # Tell FEAST to materialise into online store.
 )
 
-# This groups features into a model version
+#------------------------------------------------------------------------------------------
+# A set of aggregated Features from one or more Feature View.
+# A unit of versioning to be used for a specific version of a Model.
+#------------------------------------------------------------------------------------------
 customer_credit_risk_feature_service = FeatureService(
     name="customer_credit_risk_feature_service",
     description="Features for Customer Credit Dirk Model",
