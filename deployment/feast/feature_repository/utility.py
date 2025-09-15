@@ -37,7 +37,7 @@ def read_yaml(file_path, default=None):
     """
     Safely read YAML file with comprehensive error handling
     Usage:
-        read_yaml_safe('config.yaml', default={'database': {'host': 'localhost'}})
+        read_yaml('config.yaml', default={'database': {'host': 'localhost'}})
 
     Args:
         file_path (str): Path to YAML file
@@ -46,14 +46,15 @@ def read_yaml(file_path, default=None):
     Returns:
         dict: Parsed YAML content or default value
     """
+    default = {} if default is None else default
     file_path = Path(file_path)
 
     if not file_path.exists():
         logging.error("YAML file does not exist: %s", file_path)
-        return default or {}
+        return default
     if not file_path.is_file():
         logging.error("Path is not a file: %s", file_path)
-        return default or {}
+        return default
 
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
