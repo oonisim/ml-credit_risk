@@ -1,7 +1,7 @@
 project: customer_credit_risk
 registry:
     registry_type: sql
-    path: postgresql+psycopg2:://${PG_ADMIN_USER}@${PG_FEAST_HOST}:${PG_FEAST_PORT}/${PG_FEAST_DB}
+    path: postgresql+psycopg2://${PG_ADMIN_USER}@${PG_FEAST_HOST}:${PG_FEAST_PORT}/${PG_FEAST_DB}
     cache_ttl_seconds: 60
     #sqlalchemy_config_kwargs:
     #    echo: True               # To show verbose SQLAlchemy operations.
@@ -11,14 +11,15 @@ registry:
     #    check_same_thread: False
 
 provider: local
+
 offline_store:
   type: postgres
-  host: localhost
-  port: 5432
-  database: offline_features
-  db_schema: credit
-  user: dbadm
-  password: P@ssword
+  host: ${PG_OFFLINE_HOST}
+  port: ${PG_OFFLINE_PORT}
+  database: ${PG_OFFLINE_DB}
+  db_schema: ${PG_OFFLINE_SCHEMA}
+  user: ${PG_OFFLINE_USER}
+  password: ${POSTGRES_PASSWORD}
 
 # Cannot use PostgreSQL as online store.
 # https://github.com/feast-dev/feast/issues/5613
@@ -36,7 +37,6 @@ offline_store:
 online_store:
   type: sqlite
   path: data/online_store.db
-
 
 entity_key_serialization_version: 3
 # By default, no_auth for authentication and authorization,

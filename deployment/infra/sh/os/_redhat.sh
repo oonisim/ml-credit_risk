@@ -2,10 +2,11 @@ if [[ "$(uname -s)" == "Linux" && -r /etc/os-release ]]; then
   distro=$(sed -n 's/^NAME="\([^"]*\)"/\1/p' /etc/os-release)
   case "$distro" in
     rhel|centos|fedora|amzn)
-      echo "Installing ${distro} Python and PostgreSQL client..."
+      echo "Installing ${distro} Python, gettext, and PostgreSQL client..."
       sudo dnf update -y && sudo dnf install -y \
         python3.11 python3.11-pip python3.11-devel \
-        postgresql-devel
+        postgresql-devel \
+        gettext
 
       # Some RHEL distros use "alternatives" instead of update-alternatives
       if command -v alternatives >/dev/null 2>&1; then

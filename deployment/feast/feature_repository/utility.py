@@ -32,7 +32,6 @@ def get_yaml_value(file_path: str, key: str, default=""):
         logging.error("get_yaml_value() failed due to %s", e)
         raise e
 
-
 def read_yaml(file_path, default=None):
     """
     Safely read YAML file with comprehensive error handling

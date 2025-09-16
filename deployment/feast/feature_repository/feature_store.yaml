@@ -11,6 +11,7 @@ registry:
     #    check_same_thread: False
 
 provider: local
+
 offline_store:
   type: postgres
   host: localhost
@@ -36,7 +37,6 @@ offline_store:
 online_store:
   type: sqlite
   path: data/online_store.db
-
 
 entity_key_serialization_version: 3
 # By default, no_auth for authentication and authorization,
