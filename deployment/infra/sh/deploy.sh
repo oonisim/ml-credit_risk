@@ -6,6 +6,8 @@ set -eo pipefail
 DIR="$(realpath "$(dirname "${0}")")"
 cd "${DIR}" || exit
 
+echo "Start setting up the tutorial environment..."
+
 chmod u+x ./start_postgresql_container.sh
 chmod u+x ./create_registry_database.sh
 chmod u+x ./create_offline_store_database.sh
@@ -20,3 +22,6 @@ chmod u+x ./create_offline_store_database.sh
 # Cannot use PostgreSQL as online store
 # https://github.com/feast-dev/feast/issues/5613
 #./create_online_store_database.sh
+
+echo
+echo "Tutorial environment setup completed."

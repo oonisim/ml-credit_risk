@@ -11,31 +11,21 @@ echo "--------------------------------------------------------------------------
 echo "Setting up PostgreSQL..."
 echo "--------------------------------------------------------------------------------"
 #--------------------------------------------------------------------------------
-# Get PostgreSQL Image
+# PostgreSQL Docker container image
 #--------------------------------------------------------------------------------
 if docker image inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
-    echo "Image ${IMAGE_NAME} already exists"
+    echo "Docker container image ${IMAGE_NAME} already exists."
 else
-    echo "Downloading ${IMAGE_NAME}..."
+    echo "Downloading Docker container image ${IMAGE_NAME}..."
     docker pull "${IMAGE_NAME}"
 fi
 
 
 #--------------------------------------------------------------------------------
-# Setup postgres user password
+# 'postgres' admin user password
 #--------------------------------------------------------------------------------
-if [[ -z "${POSTGRES_PASSWORD}" ]]; then
-  read -r -s -p "Enter PostgreSQL password: " POSTGRES_PASSWORD
-  echo
-  if [[ -z "${POSTGRES_PASSWORD}" ]]; then
-    echo "Error: POSTGRES_PASSWORD cannot be empty" >&2
-    exit 1
-  fi
-  # Unset when the shell exits
-  trap 'unset POSTGRES_PASSWORD' EXIT
-fi
-
-echo "Setting up PostgreSQL password file (.pgpass) for user ${PG_ADMIN_USER} if not set..."
+echo
+echo "Setting up PostgreSQL password file (.pgpass) for the admin user '${PG_ADMIN_USER}' if not set..."
 setup_pgpass_entry \
   "localhost" \
   "5432" \
@@ -48,12 +38,15 @@ setup_pgpass_entry \
 # Start PostgreSQL Container
 #--------------------------------------------------------------------------------
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-    echo "Container ${CONTAINER_NAME} exists. Removing..."
+    echo
+    echo "Container ${CONTAINER_NAME} exists. Removing it..."
     docker rm -f "${CONTAINER_NAME}"
 else
+    echo
     echo "Container psql15 does not exist."
 fi
 
+echo
 echo "Starting PostgreSQL docker container..."
 CONTAINER_ID=$(docker run --name "${CONTAINER_NAME}" \
   -e POSTGRES_PASSWORD="${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}" \
@@ -69,30 +62,31 @@ echo "Check logs with: docker logs ${CONTAINER_ID}"
 #--------------------------------------------------------------------------------
 # Verify PostgrSQL Container
 #--------------------------------------------------------------------------------
-echo "Checking if PostgreSQL container is running and ready..."
+echo "Checking if PostgreSQL container is running..."
 if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-    echo "Container $CONTAINER_NAME is not running"
+    echo "Container $CONTAINER_NAME is not running."
     echo "Container status:"
     docker ps -a --filter "name=$CONTAINER_NAME"
     exit 1
 fi
 
-echo "Checking PostgreSQL readiness..."
+echo
+echo "Checking PostgreSQL container response..."
 for i in {1..30}; do
     if docker exec "$CONTAINER_NAME" pg_isready -U postgres >/dev/null 2>&1; then
-        echo "PostgreSQL is ready!"
+        echo "PostgreSQL is available and ready."
         break
     else
-        echo "⏳ Waiting for PostgreSQL... ($i/30)"
+        echo "⏳ Waiting for PostgreSQL to respond... ($i/30)"
         sleep 1
     fi
 done
 
 if docker exec "$CONTAINER_NAME" pg_isready -U postgres >/dev/null 2>&1; then
-    echo "✅ PostgreSQL is fully operational"
+    echo "✅ PostgreSQL is fully operational."
     docker exec "$CONTAINER_NAME" psql -U postgres -c "SELECT version();" | head -3
 else
-    echo "❌ PostgreSQL failed to start properly"
+    echo "❌ PostgreSQL failed to start properly."
     echo "Container logs:"
     docker logs --tail 20 "$CONTAINER_NAME"
     exit 1

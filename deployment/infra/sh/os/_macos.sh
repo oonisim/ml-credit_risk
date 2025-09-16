@@ -1,22 +1,3 @@
-# Install Mac OSX PostgreSQL client.
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "Installing OpenMP ..."
-    brew install libomp
-
-    echo "Installing Mac OSX PostgreSQL client..."
-    brew install libpq
-
-    echo "Setting PATH environment variable for PostgreSQL client..."
-    if [[ ":$PATH:" != *":/opt/homebrew/opt/libpq/bin:"* ]]; then
-       echo 'export PATH="/opt/homebrew/opt/libpq/bin:$PATH"' >> ~/.bash_profile
-       export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-       echo "Added /opt/homebrew/opt/libpq/bin to PATH"
-    else
-       echo "/opt/homebrew/opt/libpq/bin is already in PATH"
-    fi
-fi
-
-
 check_docker_desktop_cli() {
     echo "Checking Docker Desktop CLI support on macOS..."
 
@@ -34,7 +15,7 @@ check_docker_desktop_cli() {
         echo "'docker desktop' command is available"
 
         if docker info >/dev/null 2>&1; then
-            echo "Docker is already running"
+            echo "Docker daemon and desktop is already running"
             return 0
         fi
 
@@ -64,4 +45,20 @@ check_docker_desktop_cli() {
     fi
 }
 
-check_docker_desktop_cli
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Installing get text, OpenMP and PostgreSQL client..."
+    brew install gettext libomp libpq && brew link --force gettext
+
+    echo
+    echo "Setting PATH environment variable for PostgreSQL client..."
+    if [[ ":$PATH:" != *":/opt/homebrew/opt/libpq/bin:"* ]]; then
+       echo 'export PATH="/opt/homebrew/opt/libpq/bin:$PATH"' >> ~/.bash_profile
+       export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+       echo "Added /opt/homebrew/opt/libpq/bin to PATH"
+    else
+       echo "/opt/homebrew/opt/libpq/bin is already in PATH"
+    fi
+
+    echo
+    check_docker_desktop_cli
+fi

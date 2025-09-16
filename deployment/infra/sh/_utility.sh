@@ -25,17 +25,15 @@ check_postgres_ready() {
 # Create a PostgreSQL password entry in ${HOME}/.pgpass
 # setup_pgpass_entry "localhost" "5432" "mydatabase" "postgres" "mypassword"
 setup_pgpass_entry() {
-
-    echo "setup_pgpass_entry: "
     local host="${1:-localhost}"
     local port="${2:-5432}"
     local database="${3:-*}"
     local user="${4:-postgres}"
     local password="${5:?Provide POSTGRES_PASSWORD}"
 
-    echo "host:${host} port:${port} database:${database} user:${user}"
     local pgpass_file="${HOME}/.pgpass"
     local pgpass_entry="${host}:${port}:${database}:${user}:${password}"
+    echo "Tying to set an entry '${host}:${port}:${database}:${user}:****' in ${pgpass_file}..."
 
     # Check if file exists and contains the entry
     if [ ! -f "$pgpass_file" ] || ! grep -Fq "${pgpass_entry}" "${pgpass_file}" 2>/dev/null; then
@@ -108,14 +106,12 @@ create_postgres_db_and_user() {
     echo "pg_isready not found; skipping readiness check"
   fi
 
-  echo "--------------------------------------------------------------------------------"
-  echo "Creating database $DB_NAME if it does not exist..."
-  echo "--------------------------------------------------------------------------------"
   if ! psql -h "$DB_HOST" -p "$DB_PORT" -U "$ADMIN_USER" -tAc \
        "SELECT 1 FROM pg_database WHERE datname='$DB_NAME';" | grep -q 1; then
     psql -h "$DB_HOST" -p "$DB_PORT" -U "$ADMIN_USER" -c "CREATE DATABASE $DB_NAME;"
   fi
 
+  echo
   echo "Creating user $DB_USER if not exists..."
   if ! psql -h "$DB_HOST" -p "$DB_PORT" -U "$ADMIN_USER" -tAc \
        "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER';" | grep -q 1; then
@@ -123,6 +119,7 @@ create_postgres_db_and_user() {
          -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
   fi
 
+  echo
   echo "Creating schema $DB_SCHEMA and granting privileges..."
   psql -h "$DB_HOST" -p "$DB_PORT" -U "$ADMIN_USER" -d "$DB_NAME" -c "
 CREATE SCHEMA IF NOT EXISTS $DB_SCHEMA;
@@ -137,9 +134,11 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA $DB_SCHEMA
 ALTER USER $DB_USER SET search_path TO $DB_SCHEMA, public;
 "
 
+  echo
   echo "Setting up .pgpass..."
   setup_pgpass_entry "$DB_HOST" "$DB_PORT" "$DB_NAME" "$DB_USER" "$DB_PASSWORD"
 
-  echo "Setup completed! Connect with:"
-  echo "psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME"
+  echo
+  echo "Setup the database ${DB_NAME} completed! Connect with: " \
+       "psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME"
 }

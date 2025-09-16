@@ -7,6 +7,7 @@ PG_ADMIN_USER='postgres'
 PGPASS_FILE="${HOME}/.pgpass"
 
 # FEAST registry database
+PG_FEAST_USER="${PG_ADMIN_USER}"
 PG_FEAST_DB="feast_registry"
 PG_FEAST_HOST="localhost"
 PG_FEAST_PORT="5432"
