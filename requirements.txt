@@ -1,4 +1,6 @@
 pylint==3.3.8
+pytest==8.4.2
+pytest-cov==7.0.0
 feast==0.53
 jupyter==1.1.1
 notebook==7.4.5
