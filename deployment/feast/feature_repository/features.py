@@ -34,7 +34,7 @@ project = Project(
 
 #--------------------------------------------------------------------------------
 # Physical Data Source where actual Features for ML consumption are stored.
-# FESST Offline Store is backed by Physical Data Source”
+# FEAST Offline Store is backed by Physical Data Source”
 #--------------------------------------------------------------------------------
 # https://docs.feast.dev/reference/data-sources/postgres
 credit_risk_feature_source = PostgreSQLSource(
