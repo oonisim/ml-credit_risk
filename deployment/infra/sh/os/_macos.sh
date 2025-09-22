@@ -60,5 +60,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 
     echo
+    echo "Setting PATH environment variable for PostgreSQL client..."
+    # To install psycopg2-binary on Apple silicon
+    # https://github.com/psycopg/psycopg2/issues/1434
+    # ```
+    # export LDFLAGS="-L$(brew --prefix openssl)/lib"
+    # export CPPFLAGS="-I$(brew --prefix openssl)/include"
+    # ```
+    brew reinstall openssl && brew link openssl
+
+    echo
     check_docker_desktop_cli
 fi
