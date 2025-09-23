@@ -3,3 +3,4 @@
 /deployment/feast/feature_repository/data/online_store.db
 /push.sh
 /deployment/feast/feature_repository/feature_store.yaml.bak
+/deployment/feast/feature_repository/feature_store.yaml
