@@ -74,7 +74,7 @@ echo
 echo "Checking PostgreSQL container response..."
 for i in {1..30}; do
     if docker exec "$CONTAINER_NAME" pg_isready -U postgres >/dev/null 2>&1; then
-        echo "PostgreSQL is available and ready."
+        echo "PostgreSQL container responded."
         break
     else
         echo "⏳ Waiting for PostgreSQL to respond... ($i/30)"
@@ -82,6 +82,8 @@ for i in {1..30}; do
     fi
 done
 
+echo
+echo "Checking PostgreSQL database response..."
 if docker exec "$CONTAINER_NAME" pg_isready -U postgres >/dev/null 2>&1; then
     echo "✅ PostgreSQL is fully operational."
     docker exec "$CONTAINER_NAME" psql -U postgres -c "SELECT version();" | head -3
