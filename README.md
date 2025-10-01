@@ -1,20 +1,24 @@
 # FEAST Tutorial (Local Quickstart)
 
-This tutorial guides you through using [Feast](https://feast.dev), an open‑source
-feature store for machine learning. You will set up local infrastructure, crete and register features,
-materialize data to an offline store, and consume features for model training.
+This tutorial guides you through using [FEAST](https://feast.dev), an open‑source
+feature store for machine learning. See FEAST Documentation: https://docs.feast.dev for more details.
 
-FEAST Documentation: https://docs.feast.dev
+You will: 
+1. Set up local infrastructure
+2. Create features and materialize them to the offline store.
+3. Register features to the registry database.
+4. Consume features for model training.
+
 
 ---
 
-## What is Feast (brief)
+## What is FEAST
 
-- Feast is a feature store that lets you define features once and use them for training and inference.
+FEAST is a feature store that lets you define features once and use them for training and inference.
 
 Key concepts :
-- Offline store: Where batch feature data lives (here: PostgreSQL).
-- Feature View: A group of features from the offline feature table that are served together 
+- Offline store: Where batch feature data lives (using PostgreSQL in this tutorial).
+- Feature View: A group of features from an offline feature table that are served together.
 - Registry Database: Metadata store tracking all FEAST objects.
 
 ---
@@ -61,7 +65,7 @@ Key concepts :
 ```
 
 ---
-# Setup Instructions
+# Deploy Tutorial Environment
 
 ## Prerequisites
 
@@ -70,7 +74,7 @@ Key concepts :
   - Python 3.10+ (tested with 3.11)
   - pip (or conda) and virtual environments
   - Docker (for local PostgreSQL container)
-- Optional (macOS): Homebrew.
+- Package Manager: Homebrew for MacOS, apt for Ubuntu, yum or dff for RHEL/CentOS/Amazon Linux.
 
 ## 1) Clone and enter the project
 
@@ -125,7 +129,7 @@ python -m notebook
 
 Open the notebooks in the `notebook/` directory to explore:
 - 01: feature engineering
-- 02: feature registration with Feast
+- 02: feature registration with FEAST
 - 03: feature consumption online
 
 PDF versions are included for quick reference.
@@ -136,7 +140,7 @@ PDF versions are included for quick reference.
 ./destroy.sh
 ```
 
-This stops and removes local infra and Feast artifacts created by the deployment scripts.
+This stops and removes local infra and FEAST artifacts created by the deployment scripts.
 
 ---
 
