@@ -61,13 +61,21 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     echo
     echo "Setting PATH environment variable for PostgreSQL client..."
+
     # To install psycopg2-binary on Apple silicon
     # https://github.com/psycopg/psycopg2/issues/1434
     # ```
     # export LDFLAGS="-L$(brew --prefix openssl)/lib"
     # export CPPFLAGS="-I$(brew --prefix openssl)/include"
     # ```
-    brew reinstall openssl && brew link openssl
+    echo
+    echo "Checking openssl as the requirement for psycopg2..."
+    if ! brew list openssl &>/dev/null; then
+        echo "OpenSSL not found via Homebrew. Installing..."
+        brew install openssl && brew link openssl
+    else
+        echo "OpenSSL is already installed via Homebrew"
+    fi
 
     echo
     check_docker_desktop_cli

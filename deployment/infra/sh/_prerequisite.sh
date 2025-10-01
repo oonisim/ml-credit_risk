@@ -4,26 +4,6 @@
 # - POSTGRES_PASSWORD environment variable for the postgres admin user.
 # - PostgreSQL client to rum psql.
 #--------------------------------------------------------------------------------
-
-if [[ -z "${POSTGRES_PASSWORD}" ]]; then
-  echo
-  echo "--------------------------------------------------------------------------------"
-  echo "Setting up administrative prerequisite..."
-  echo "--------------------------------------------------------------------------------"
-  echo "Provide a new password for the Docker PostgreSQL administration."
-  echo "Alternatively, set the environment variable POSTGRES_PASSWORD as" \
-       "'export POSTGRES_PASSWORD=... before running this script."
-  read -r -s -p "> " POSTGRES_PASSWORD
-  echo
-  if [[ -z "${POSTGRES_PASSWORD}" ]]; then
-    echo "Error: POSTGRES_PASSWORD cannot be empty" >&2
-    exit 1
-  fi
-  export "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
-  trap 'unset POSTGRES_PASSWORD' EXIT
-fi
-
-
 echo "--------------------------------------------------------------------------------"
 echo "Setting up OS prerequisite..."
 echo "--------------------------------------------------------------------------------"
@@ -52,7 +32,7 @@ case "${OSTYPE}" in
     fi
     ;;
   darwin*)
-    echo "Detected MacOS ${distro}"
+    echo "Detected MacOS."
     . os/_macos.sh
     ;;
   *)

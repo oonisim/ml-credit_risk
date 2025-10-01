@@ -4,12 +4,8 @@
 
 # Setup proxy first and verify the connection.
 # https://tex.stackexchange.com/a/521842
-
-
-# Run with sudo -E bash
-
-# brew install --cask mactex
-# brew install --cask basictex
+sudo -E brew install --cask mactex
+sudo -E brew install --cask basictex
 
 # https://tex.stackexchange.com/a/147090
 tlmgr init-usertree
