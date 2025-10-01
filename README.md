@@ -120,7 +120,7 @@ chmod u+x ./python/install_python_packages.sh
 ./python/install_python_packages.sh
 ```
 
-## 7) Run Tutorial Notebooks
+## 7) Run Tutorial
 
 Start Jupyter:
 ```bash
@@ -146,7 +146,7 @@ This stops and removes local infra and FEAST artifacts created by the deployment
 
 ## Troubleshooting
 
-- OpenSSL build errors on macOS:
+- psycopg2 installation build errors on macOS:
   ```bash
   brew install openssl && brew link openssl
   ```
@@ -154,7 +154,7 @@ This stops and removes local infra and FEAST artifacts created by the deployment
   ```bash
   pip install -r python/requirements.txt
   ```
-- Ensure Docker is running before `./deploy.sh`.
+- Ensure Docker is available before `./deploy.sh`.
 - If `POSTGRES_PASSWORD` was exported for the session, you can unset it:
   ```bash
   unset POSTGRES_PASSWORD
