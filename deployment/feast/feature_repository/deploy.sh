@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#--------------------------------------------------------------------------------
+# Setup FEAST Configurations (but not run feast apply)
+#--------------------------------------------------------------------------------
 set -eo pipefail
 DIR="$(realpath "$(dirname "${0}")")"
 cd "${DIR}" || exit 1

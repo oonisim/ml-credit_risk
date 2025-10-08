@@ -46,8 +46,8 @@ check_docker_desktop_cli() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "Installing get text, OpenMP and PostgreSQL client..."
-    brew install gettext libomp libpq && brew link --force gettext
+    echo "Installing get text, OpenMP, cmake, apache arrow C++ lib, and PostgreSQL client..."
+    brew install gettext libomp libpq cmake apache-arrow && brew link --force gettext
 
     echo
     echo "Setting PATH environment variable for PostgreSQL client..."

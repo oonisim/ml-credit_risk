@@ -82,7 +82,8 @@ case "${OSTYPE}" in
         if [[ -f "os/_macos.sh" ]]; then
             . os/_macos.sh
         else
-            echo "Warning: os/_macos.sh not found, skipping OS setup"
+            echo "Warning: os/_macos.sh not found."
+            exit 1
         fi
         ;;
     *)
