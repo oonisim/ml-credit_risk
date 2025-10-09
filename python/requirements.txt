@@ -8,7 +8,9 @@ psycopg2-binary==2.9.10
 psycopg2==2.9.10
 psycopg==3.2.10
 psycopg-pool==3.2.6
-pyarrow==17.0.0
+# Pyarrow wheel ( include the Apache Arrow and Apache Parquet C++ binary libraries bundled with the wheel.)
+# https://arrow.apache.org/install/
+pyarrow==21.0.*
 matplotlib==3.10.6
 plotly==6.3.0
 seaborn==0.13.2
