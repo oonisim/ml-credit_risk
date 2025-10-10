@@ -46,8 +46,12 @@ check_docker_desktop_cli() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "Installing get text, OpenMP, cmake, apache arrow C++ lib, and PostgreSQL client..."
-    brew install gettext libomp libpq cmake apache-arrow && brew link --force gettext
+    echo "Installing Apache Arrow C++ and build dependencies..."
+    brew install cmake apache-arrow apache-arrow-glib
+
+    echo
+    echo "Installing get text, OpenMP, and PostgreSQL client..."
+    brew install gettext libomp libpq && brew link --force gettext
 
     echo
     echo "Setting PATH environment variable for PostgreSQL client..."
@@ -58,9 +62,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     else
        echo "/opt/homebrew/opt/libpq/bin is already in PATH"
     fi
-
-    echo
-    echo "Setting PATH environment variable for PostgreSQL client..."
 
     # To install psycopg2-binary on Apple silicon
     # https://github.com/psycopg/psycopg2/issues/1434

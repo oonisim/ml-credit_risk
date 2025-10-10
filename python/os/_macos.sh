@@ -51,6 +51,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                       brew --prefix openssl@3 2>/dev/null)
     fi
 
+    # To install psycopg2-binary on Apple silicon
+    # https://github.com/psycopg/psycopg2/issues/1434
     export LDFLAGS="-L$OPENSSL_PATH/lib"
     export CPPFLAGS="-I$OPENSSL_PATH/include"
 fi
