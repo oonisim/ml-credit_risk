@@ -46,8 +46,10 @@ check_docker_desktop_cli() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "Installing Apache Arrow C++ and build dependencies..."
-    brew install cmake apache-arrow apache-arrow-glib
+    # Apache Arrow C++ and GLib installation if pyarrow requires compilation.
+    # Python 3.11 has wheels for macOS on PyPI, so no need to install Apache Arrow C++.
+    # echo "Installing Apache Arrow C++ and build dependencies..."
+    # brew install cmake apache-arrow apache-arrow-glib
 
     echo
     echo "Installing get text, OpenMP, and PostgreSQL client..."
