@@ -71,7 +71,7 @@ Key concepts :
 
 - MacOS or Linux with:
   - Git
-  - Python 3.10+ (tested with 3.11)
+  - Python 3.10 or 3.11 (tested with 3.11 and does **not** work with 3.12 or later due to pyarrow requires compilation and Apache Arrow C++).
   - pip (or conda) and virtual environments
   - Docker (for local PostgreSQL container)
 - Package Manager: Homebrew for MacOS, apt for Ubuntu, yum or dff for RHEL/CentOS/Amazon Linux.
